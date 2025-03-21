@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { auth } from '../config/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { signOut } from 'firebase/auth';
+import defaultProfile from './channels4_profile.jpg'
 
 export const Navbar = () => {
   const [user] = useAuthState(auth);
@@ -32,8 +33,7 @@ export const Navbar = () => {
         <div className="flex items-center gap-4">
           <p className="text-gray-800 font-medium">{user?.displayName}</p>
           <img
-            src={user?.photoURL || ""}
-            alt="Profile"
+            src={user?.photoURL || defaultProfile}
             className="w-10 h-10 rounded-full border-2 border-gray-200"
           />
           <button
