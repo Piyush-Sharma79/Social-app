@@ -29,7 +29,7 @@ export const Main = () => {
       {postsList ? (
         postsList.map((post) => <Post key={post.id} post={post} />)
       ) : (
-        <p className="text-gray-500 text-center">Login to view Posts</p>
+        <p className="text-gray-500 text-center text-lg">Loading posts...</p>
       )}
     </div>
   );

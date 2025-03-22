@@ -2,7 +2,9 @@ import { Link } from 'react-router-dom';
 import { auth } from '../config/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { signOut } from 'firebase/auth';
-import defaultProfile from './channels4_profile.jpg'
+import defaultProfile from './channels4_profile.jpg'; // Assuming this is your image
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'; // Shadcn/UI
+import { Button } from '../components/ui/button'; // Shadcn/UI
 
 export const Navbar = () => {
   const [user] = useAuthState(auth);
@@ -12,7 +14,6 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-md p-4 flex items-center justify-between">
-      {/* Left side: Links */}
       <div className="flex items-center gap-6">
         <Link to="/" className="text-gray-700 hover:text-blue-500 font-semibold transition">
           Home
@@ -28,20 +29,16 @@ export const Navbar = () => {
         )}
       </div>
 
-      {/* Right side: User info */}
       {user && (
         <div className="flex items-center gap-4">
           <p className="text-gray-800 font-medium">{user?.displayName}</p>
-          <img
-            src={user?.photoURL || defaultProfile}
-            className="w-10 h-10 rounded-full border-2 border-gray-200"
-          />
-          <button
-            onClick={signUserOut}
-            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
-          >
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={user?.photoURL || defaultProfile} alt="Profile" />
+            <AvatarFallback>{user?.displayName?.[0] || 'U'}</AvatarFallback>
+          </Avatar>
+          <Button onClick={signUserOut} variant="destructive">
             Logout
-          </button>
+          </Button>
         </div>
       )}
     </nav>

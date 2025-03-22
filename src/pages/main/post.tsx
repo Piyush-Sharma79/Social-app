@@ -1,8 +1,10 @@
-import { addDoc, collection, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
-import { Post as IPost } from "./main.tsx";
-import { auth, db } from "../../config/firebase.ts";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useEffect, useState } from "react";
+import { addDoc, collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { Post as IPost } from './main.tsx';
+import { auth, db } from '../../config/firebase.ts';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'; // Shadcn/UI
+import { Button } from '../../components/ui/button'; // Shadcn/UI
 
 interface Props {
   post: IPost;
@@ -17,7 +19,7 @@ export const Post = (props: Props) => {
   const { post } = props;
   const [likes, setLikes] = useState<Like[] | null>(null);
   const [user] = useAuthState(auth);
-  const likesRef = collection(db, "likes");
+  const likesRef = collection(db, 'likes');
 
   const addLike = async () => {
     try {
@@ -34,11 +36,10 @@ export const Post = (props: Props) => {
 
   const removeLike = async () => {
     try {
-      const likeToDeleteQuery = query(likesRef, where("userId", "==", user?.uid), where("postId", "==", post.id));
+      const likeToDeleteQuery = query(likesRef, where('userId', '==', user?.uid), where('postId', '==', post.id));
       const likeToDeleteData = await getDocs(likeToDeleteQuery);
       const likeId = likeToDeleteData.docs[0].id;
-      const likeToDelete = doc(db, "likes", likeId);
-
+      const likeToDelete = doc(db, 'likes', likeId);
       await deleteDoc(likeToDelete);
       if (user) {
         setLikes((prev) => prev && prev.filter((like) => like.likeId !== likeId));
@@ -48,7 +49,7 @@ export const Post = (props: Props) => {
     }
   };
 
-  const likesDoc = query(likesRef, where("postId", "==", post.id));
+  const likesDoc = query(likesRef, where('postId', '==', post.id));
   const getLikes = async () => {
     const data = await getDocs(likesDoc);
     setLikes(data.docs.map((doc) => ({ userId: doc.data().userId, likeId: doc.id })));
@@ -61,23 +62,24 @@ export const Post = (props: Props) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-semibold text-gray-800 mb-2">{post.title}</h1>
-      <p className="text-gray-700 mb-2">{post.description}</p>
-      <p className="text-sm text-gray-500 italic">Posted by: {post.username}</p>
-      <div className="flex items-center gap-4 mt-3">
-        <button
-          onClick={hasUserLiked ? removeLike : addLike}
-          className={`text-lg px-3 py-1 rounded-full transition ${
-            hasUserLiked ? "bg-red-100 text-red-500" : "bg-blue-100 text-blue-500"
-          } hover:bg-opacity-75`}
-        >
-          {hasUserLiked ? "👎" : "👍"}
-        </button>
-        {likes?.length && (
-          <p className="text-gray-600 text-sm">Likes: {likes.length}</p>
-        )}
-      </div>
-    </div>
+    <Card className="max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="text-xl text-gray-800">{post.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <p className="text-gray-700">{post.description}</p>
+        <p className="text-sm text-gray-500 italic">Posted by: {post.username}</p>
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={hasUserLiked ? removeLike : addLike}
+            variant={hasUserLiked ? 'secondary' : 'default'}
+            size="sm"
+          >
+            {hasUserLiked ? '👎 Unlike' : '👍 Like'}
+          </Button>
+          {likes?.length && <p className="text-gray-600 text-sm">Likes: {likes.length}</p>}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
