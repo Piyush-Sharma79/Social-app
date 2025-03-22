@@ -13,5 +13,6 @@ export const CreatePost = () => {
         </CardContent>
       </Card>
     </div>
+    
   );
 };
